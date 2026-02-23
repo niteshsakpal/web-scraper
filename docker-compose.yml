@@ -1,0 +1,39 @@
+services:
+  web:
+    build: .
+    command: gunicorn reg_ingestion.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.example
+    depends_on:
+      - postgres
+      - redis
+
+  celery_worker:
+    build: .
+    command: celery -A reg_ingestion worker --loglevel=info
+    env_file:
+      - .env.example
+    depends_on:
+      - postgres
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-regulatory_db}
+      POSTGRES_USER: ${POSTGRES_USER:-reg_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-reg_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

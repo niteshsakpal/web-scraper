@@ -1,0 +1,16 @@
+{% extends 'ingestion/base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Submit Regulatory URL</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.url.label_tag }}
+        {{ form.url }}
+        {% if form.url.errors %}<div>{{ form.url.errors }}</div>{% endif %}
+        <div style="margin-top: 1rem;">
+            <button class="btn" type="submit">Start Ingestion</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

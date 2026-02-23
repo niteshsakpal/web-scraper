@@ -1,0 +1,31 @@
+{% extends 'ingestion/base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Operations Dashboard</h2>
+    <div class="grid">
+        <div><div>Total Jobs</div><div class="metric">{{ metrics.total_jobs }}</div></div>
+        <div><div>Success Rate</div><div class="metric">{{ metrics.success_rate }}%</div></div>
+        <div><div>Avg Processing Time</div><div class="metric">{{ metrics.avg_processing_time }}s</div></div>
+        <div><div>Failure Count</div><div class="metric">{{ metrics.failure_count }}</div></div>
+    </div>
+</div>
+<div class="card">
+    <h3>Recent Jobs</h3>
+    <table>
+        <thead><tr><th>ID</th><th>URL</th><th>Status</th><th>Created</th></tr></thead>
+        <tbody>
+        {% for job in recent_jobs %}
+            <tr>
+                <td><a href="{% url 'job_detail' job.id %}">#{{ job.id }}</a></td>
+                <td>{{ job.url }}</td>
+                <td class="status">{{ job.status }}</td>
+                <td>{{ job.created_at }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">No jobs available.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
