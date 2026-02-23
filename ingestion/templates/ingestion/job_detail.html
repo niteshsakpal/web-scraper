@@ -1,0 +1,57 @@
+{% extends 'ingestion/base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Job #{{ job.id }}</h2>
+    <p><strong>URL:</strong> {{ job.url }}</p>
+    <p><strong>Status:</strong> <span class="status">{{ job.status }}</span></p>
+    <p><strong>Created:</strong> {{ job.created_at }} | <strong>Completed:</strong> {{ job.completed_at|default:"-" }}</p>
+    {% if job.error_message %}<p><strong>Error:</strong> {{ job.error_message }}</p>{% endif %}
+</div>
+
+<div class="card">
+    <h3>Scraped Content</h3>
+    {% if scraped %}
+        <p><strong>Language:</strong> {{ scraped.detected_language }}</p>
+        <p><strong>HTML Artifact:</strong> {{ scraped.raw_html }}</p>
+        <pre>{{ scraped.cleaned_text|truncatechars:1600 }}</pre>
+    {% else %}
+        <p>Scraped content pending.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>Translation Result</h3>
+    {% if translation %}
+        <p><strong>Engine:</strong> {{ translation.translation_engine }}</p>
+        <pre>{{ translation.translated_text|truncatechars:1200 }}</pre>
+    {% else %}
+        <p>Translation pending.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>Summary Result</h3>
+    {% if summary %}
+        <p><strong>Model:</strong> {{ summary.model_name }} ({{ summary.prompt_version }})</p>
+        <p><strong>Temperature:</strong> {{ summary.temperature }} | <strong>Tokens:</strong> {{ summary.token_usage }}</p>
+        <pre>{{ summary.summary_text }}</pre>
+    {% else %}
+        <p>Summary pending.</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>Audit Trail</h3>
+    <table>
+        <thead><tr><th>Timestamp</th><th>Stage</th><th>Detail</th></tr></thead>
+        <tbody>
+        {% for event in audit_events %}
+            <tr><td>{{ event.created_at }}</td><td>{{ event.stage }}</td><td>{{ event.detail }}</td></tr>
+        {% empty %}
+            <tr><td colspan="3">No audit entries available.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
